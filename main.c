@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 #include "shelllib.h"
 
 
@@ -15,7 +16,7 @@ int main(int argc, char const *argv[])
     /* code */
     //int loop = 1;
     char cwd[100];
-    char input[100];
+    char input[256];
     while (strcmp(input, "exit") != 10){
         output(input);
         if (getcwd(cwd, sizeof(cwd)) != NULL) {
@@ -25,6 +26,15 @@ int main(int argc, char const *argv[])
            perror("getcwd() error");
            return 1;
         }
+        char* tokens = malloc(sizeof(tokens)*256);
+        char* token = strtok(input, " \t|>,<&;");
+        while (token != NULL){
+            strcat(tokens, token);
+            token = strtok(NULL, " \t|>,<&;");
+        }
+
+
+        free(tokens);
     }
     return 0;
 }
