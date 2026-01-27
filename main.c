@@ -13,7 +13,7 @@
 int main(int argc, char const *argv[])
 {
     /* code */
-    int loop = 1;
+    //int loop = 1;
     char cwd[100];
     char input[100];
     while (strcmp(input, "exit") != 10){
