@@ -33,7 +33,7 @@ int main(int argc, char const *argv[])
             token = strtok(NULL, " \t|>,<&;");
         }
 
-
+        //freeing tokens only at the very end
         free(tokens);
     }
     return 0;
