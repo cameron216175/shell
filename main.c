@@ -30,7 +30,7 @@ int main(int argc, char const *argv[])
 }
 
 void output(char* arg){
-    printf(arg, "\n");
+    printf("%s\n", arg);
     //int test = strcmp(arg, "exit");
     //printf("%d", test);
     // if (strcmp(arg, "exit") == 0){
