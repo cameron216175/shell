@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <dirent.h>
 #include "shelllib.h"
 
 
@@ -20,6 +21,7 @@ int main(int argc, char const *argv[])
         if (getcwd(cwd, sizeof(cwd)) != NULL) {
             printf("[%s] >> ", cwd);
             fgets(input,sizeof(input),stdin);
+            input[strcspn(input, "\n")] = 0;
             token(input);
         } else {
             perror("getcwd() error");
@@ -47,7 +49,46 @@ void token(char* arg){
         token = strtok(NULL, " ");
     }
 
-    output(tokens);
+    execute_command(tokens);
 
+    return;
+}
+
+
+void execute_command(char **tokens){
+    if (!tokens[0]) return;
+
+    
+    for (int i = 0; i < sizeof(commands)/sizeof(commands[0]); i++){
+        if (strcmp(tokens[0], commands[i].name) == 0){
+            commands[i].fn(tokens[1]);
+            return;
+        }
+    }
+
+    printf("Error: command %s not found!\n", tokens[0]);
+}
+
+void cd(char* arg){
+    printf("CD!! \n");
+    return;
+}
+
+void ls(char* arg){
+    struct dirent *de;
+
+    if(arg == NULL) arg = ".";
+
+    DIR *dr = opendir(arg);
+
+    if(dr == NULL){
+        printf("Error: %s is not a valid directory! (%s)\n", arg, strerror(errno));
+        return;
+    }
+
+    while ((de = readdir(dr)) != NULL)
+            printf("%s\n", de->d_name);
+
+    closedir(dr);
     return;
 }
