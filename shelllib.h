@@ -4,7 +4,7 @@ void output(char* arg[32]);
 void token(char* arg);
 void execute_command(char **tokens);
 void ls(char* arg);
-
+void quit(char* arg);
 
 struct command {
     const char *name;
@@ -13,7 +13,8 @@ struct command {
 
 struct command commands[] = {
     {"cd", cd},
-    {"ls", ls}
+    {"ls", ls},
+    {"exit", quit}
 };
 
 

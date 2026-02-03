@@ -6,9 +6,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <dirent.h>
+#include <stdlib.h>
 #include "shelllib.h"
-
-
 
 
 int main(int argc, char const *argv[])
@@ -17,7 +16,7 @@ int main(int argc, char const *argv[])
     int loop = 1;
     char cwd[100];
     char input[100];
-    while (strcmp(input, "exit") != 10){
+    while (!feof(stdin)){
         if (getcwd(cwd, sizeof(cwd)) != NULL) {
             printf("[%s] >> ", cwd);
             fgets(input,sizeof(input),stdin);
@@ -91,4 +90,8 @@ void ls(char* arg){
 
     closedir(dr);
     return;
+}
+
+void quit(char* arg){
+    exit(0);
 }
