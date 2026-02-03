@@ -11,13 +11,13 @@
 
 
 
-char *cwd;
+char *cwd; // Define cwd globally, This is so we can access it anywhere in the program.
 
 int main(int argc, char const *argv[])
 {
     /* code */
-    const char *home = getenv("HOME");
-    cwd = home;
+    const char *HOME = getenv("HOME");
+    cwd = HOME;
     int loop = 1;
     DIR *dr = opendir(cwd);
     if(dr == NULL){
