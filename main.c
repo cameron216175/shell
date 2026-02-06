@@ -27,7 +27,7 @@ int main(int argc, char const *argv[])
 
     char input[100];
     while (!feof(stdin)){
-        printf("[%s] >> ", cwd);
+        printf("[%s] ~", cwd);
         fgets(input,sizeof(input),stdin);
         input[strcspn(input, "\n")] = 0;
         token(input);
@@ -80,22 +80,29 @@ void cd(char* arg){
 }
 
 void ls(char* arg){
-    struct dirent *de;
 
-    if(arg == NULL) arg = cwd;
+    //struct dirent *de;
 
-    DIR *dr = opendir(arg);
+    pid_t p = fork();
 
-    if(dr == NULL){
-        printf("Error: %s is not a valid directory! (%s)\n", arg, strerror(errno));
-        return;
+    if (p < 0){
+        //fork has failed
+        printf("fork failed...help!");
     }
 
-    while ((de = readdir(dr)) != NULL)
-            printf("%s\n", de->d_name);
-
-    closedir(dr);
-    return;
+    else if (p == 0){
+        //child fork
+        
+        if (execl("/bin/ls", "ls", "-l", "-a", NULL) == -1){
+            int n = errno;
+            
+            perror("Error!!");
+            printf("Error number %d\n", n);
+        }
+    }
+    else if (p > 0){
+        wait(NULL);
+    }
 }
 
 void quit(char* arg){
