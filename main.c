@@ -10,7 +10,7 @@
 #include "shelllib.h"
 
 
-char *cwd; // Define cwd globally, This is so we can access it anywhere in the program.
+const char *cwd; // Define cwd globally, This is so we can access it anywhere in the program.
 
 int main(int argc, char const *argv[])
 {
@@ -27,7 +27,7 @@ int main(int argc, char const *argv[])
 
     char input[100];
     while (!feof(stdin)){
-        printf("[%s] >> ", cwd);
+        printf("[%s] ~", cwd);
         fgets(input,sizeof(input),stdin);
         input[strcspn(input, "\n")] = 0;
         token(input);
@@ -46,56 +46,42 @@ void output(char* arg[32]){
 
 void token(char* arg){
     char *tokens[32] = {};
-
-    char *token = strtok(arg, " ");
+    char *token = strtok(arg, " \t;|><&");
     int i = 0;
     while (token != NULL){
         tokens[i++] = token;
-        token = strtok(NULL, " ");
+        token = strtok(NULL, " \t;|><&");
     }
 
-    execute_command(tokens);
+    int length = i;
+
+    execute_command(tokens, length);
 
     return;
 }
 
 
-void execute_command(char **tokens){
+void execute_command(char **tokens, int length){
     if (!tokens[0]) return;
+    pid_t p = fork();
 
-    
-    for (int i = 0; i < sizeof(commands)/sizeof(commands[0]); i++){
-        if (strcmp(tokens[0], commands[i].name) == 0){
-            commands[i].fn(tokens[1]);
-            return;
+    if (p < 0){
+        //fork has failed
+        printf("fork failed...help!");
+    }
+
+    else if (p == 0){
+        //child fork
+        
+        if (execvp(tokens[0], tokens) == -1){
+            int n = errno;
+            perror("Error!!");
+            printf("Error number %d\n", n);
         }
     }
-
-    printf("Error: command %s not found!\n", tokens[0]);
-}
-
-void cd(char* arg){
-    printf("CD!! \n");
-    return;
-}
-
-void ls(char* arg){
-    struct dirent *de;
-
-    if(arg == NULL) arg = cwd;
-
-    DIR *dr = opendir(arg);
-
-    if(dr == NULL){
-        printf("Error: %s is not a valid directory! (%s)\n", arg, strerror(errno));
-        return;
+    else if (p > 0){
+        wait(NULL);
     }
-
-    while ((de = readdir(dr)) != NULL)
-            printf("%s\n", de->d_name);
-
-    closedir(dr);
-    return;
 }
 
 void quit(char* arg){
