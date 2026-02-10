@@ -63,6 +63,7 @@ void token(char* arg){
 
 void execute_command(char **tokens, int length){
     if (!tokens[0]) return;
+    if (tokens[0] == "exit") quit();
     pid_t p = fork();
 
     if (p < 0){
@@ -84,6 +85,7 @@ void execute_command(char **tokens, int length){
     }
 }
 
-void quit(char* arg){
+void quit(){
     exit(0);
 }
+
