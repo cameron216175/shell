@@ -63,7 +63,7 @@ void token(char* arg){
 
 void execute_command(char **tokens, int length){
     if (!tokens[0]) return;
-    if (tokens[0] == "exit") quit();
+    if (strcmp(tokens[0], "exit\n")) quit();
     pid_t p = fork();
 
     if (p < 0){
