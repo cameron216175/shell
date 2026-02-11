@@ -54,6 +54,9 @@ void token(char* arg){
         token = strtok(NULL, " ");
     }
 
+    // for (int i = 0; i < 32; i++){
+    //     printf("%s",tokens[i]);
+    // }
     execute_command(tokens);
 
     return;
@@ -61,26 +64,28 @@ void token(char* arg){
 
 
 void execute_command(char **tokens){
+    
     if (!tokens[0]) return;
 
-    
+
     for (int i = 0; i < sizeof(commands)/sizeof(commands[0]); i++){
         if (strcmp(tokens[0], commands[i].name) == 0){
-            commands[i].fn(tokens[1]);
+            commands[i].fn(tokens);
             return;
         }
     }
 
-    printf("Error: command %s not found!\n", tokens[0]);
+    ls(tokens);
+
+    //printf("Error: command %s not found!\n", tokens[0]);
 }
 
-void cd(char* arg){
+void cd(char** arg){
     printf("CD!! \n");
     return;
 }
 
-void ls(char* arg){
-
+void ls(char** args){
     //struct dirent *de;
 
     pid_t p = fork();
@@ -93,7 +98,7 @@ void ls(char* arg){
     else if (p == 0){
         //child fork
         
-        if (execl("/bin/ls", "ls", "-l", "-a", NULL) == -1){
+        if (execvp(args[0], args) == -1){
             int n = errno;
             
             perror("Error!!");
@@ -105,6 +110,6 @@ void ls(char* arg){
     }
 }
 
-void quit(char* arg){
+void quit(char** arg){
     exit(0);
 }
