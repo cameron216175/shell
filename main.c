@@ -109,11 +109,19 @@ void externalCommands(char** args){
 }
 
 void getpath(char** arg) {
+    if (arg[1]) output("Error: This command does not require arguments"); return;
     output(path);
     return;
 }
 
 void setpath(char** arg) {
+    if (!arg[1]){
+        output("Error: This command requires and arguement"); 
+        return;
+    } else if (arg[2]){
+        output("Error: This command takes only 1 command"); 
+        return;
+    } 
     strcpy(path, arg[1]);
     return;
 }
