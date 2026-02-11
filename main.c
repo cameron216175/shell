@@ -11,11 +11,13 @@
 
 
 char *cwd = NULL;
+char *path = NULL;
 
 int main(int argc, char const *argv[])
 {
     // Program init ---
     const char *HOME = getenv("HOME");
+    path = getenv("PATH");
 
     if (chdir(HOME) != 0 || HOME == NULL) {
         printf("Error: %s (%s)\n", HOME, strerror(errno));
@@ -37,11 +39,8 @@ int main(int argc, char const *argv[])
 }
 
 
-void output(char* arg[32]){
-    for (int i = 0; arg[i] != NULL; i++){
-        printf("%s      ",arg[i]);
-    }
-    printf("\n");
+void output(char* arg){
+    printf("%s \n", arg);
     return;
 }
 
@@ -75,7 +74,7 @@ void execute_command(char **tokens){
         }
     }
 
-    ls(tokens);
+    externalCommands(tokens);
 
     //printf("Error: command %s not found!\n", tokens[0]);
 }
@@ -98,7 +97,7 @@ void cd(char** path){
     return;
 }
 
-void ls(char** args){
+void externalCommands(char** args){
     //struct dirent *de;
 
     pid_t p = fork();
@@ -121,6 +120,25 @@ void ls(char** args){
         wait(NULL);
     }
 }
+
+void getpath(char** arg) {
+    if (arg[1]) output("Error: This command does not require arguments"); return;
+    output(path);
+    return;
+}
+
+void setpath(char** arg) {
+    if (!arg[1]){
+        output("Error: This command requires and arguement"); 
+        return;
+    } else if (arg[2]){
+        output("Error: This command takes only 1 command"); 
+        return;
+    } 
+    strcpy(path, arg[1]);
+    return;
+}
+
 
 void quit(char** arg){
     exit(0);
