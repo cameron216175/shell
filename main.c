@@ -111,9 +111,7 @@ void externalCommands(char** args){
         //child fork
         
         if (execvp(args[0], args) == -1){
-            int n = errno;
-            perror("Error!!");
-            printf("Error number %d\n", n);
+            printf("Error: %s (%s)\n", args, strerror(errno));
         }
     }
     else if (p > 0){
