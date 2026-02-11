@@ -10,7 +10,7 @@
 #include "shelllib.h"
 
 
-char *cwd; // Define cwd globally, This is so we can access it anywhere in the program.
+const char *cwd; // Define cwd globally, This is so we can access it anywhere in the program.
 
 int main(int argc, char const *argv[])
 {
@@ -46,12 +46,11 @@ void output(char* arg[32]){
 
 void token(char* arg){
     char *tokens[32] = {};
-
-    char *token = strtok(arg, " ");
+    char *token = strtok(arg, " \t;|><&");
     int i = 0;
     while (token != NULL){
         tokens[i++] = token;
-        token = strtok(NULL, " ");
+        token = strtok(NULL, " \t;|><&");
     }
 
     // for (int i = 0; i < 32; i++){
@@ -100,7 +99,6 @@ void ls(char** args){
         
         if (execvp(args[0], args) == -1){
             int n = errno;
-            
             perror("Error!!");
             printf("Error number %d\n", n);
         }
@@ -113,3 +111,4 @@ void ls(char** args){
 void quit(char** arg){
     exit(0);
 }
+
