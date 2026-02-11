@@ -10,24 +10,25 @@
 #include "shelllib.h"
 
 
-const char *cwd; // Define cwd globally, This is so we can access it anywhere in the program.
+char *cwd = NULL;
 
 int main(int argc, char const *argv[])
 {
-    /* code */
+    // Program init ---
     const char *HOME = getenv("HOME");
-    cwd = HOME;
-    int loop = 1;
-    DIR *dr = opendir(cwd);
-    if(dr == NULL){
-        printf("Error: %s is not a valid directory! (%s)\n", cwd, strerror(errno));
+
+    if (chdir(HOME) != 0 || HOME == NULL) {
+        printf("Error: %s (%s)\n", HOME, strerror(errno));
         exit(1);
     }
-    closedir(dr);
+
+    cwd = strdup(HOME);
 
     char input[100];
-    while (!feof(stdin)){
-        printf("[%s] ~", cwd);
+   // -------
+
+    while (!feof(stdin)){  // Main loop
+        printf("[%s] >> ", cwd);
         fgets(input,sizeof(input),stdin);
         input[strcspn(input, "\n")] = 0;
         token(input);
