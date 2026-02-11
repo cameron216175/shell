@@ -81,10 +81,20 @@ void execute_command(char **tokens){
 }
 
 void cd(char** path){
-    if (chdir(path) != 0 || path == NULL) {
-        printf("Error: %s (%s)\n", path, strerror(errno));
-        exit(1);
+
+    if (path[1] == NULL){
+        const char *HOME = getenv("HOME");
+        if (chdir(HOME) != 0){
+            printf("Error: %s (%s)\n", path[1], strerror(errno));
+        }
+        return;
     }
+
+    if (chdir(path[1]) != 0 || path[1] == NULL) {
+        printf("Error: %s (%s)\n", path[1], strerror(errno));
+        return;
+    }
+
     return;
 }
 
