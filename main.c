@@ -80,8 +80,11 @@ void execute_command(char **tokens){
     //printf("Error: command %s not found!\n", tokens[0]);
 }
 
-void cd(char** arg){
-    printf("CD!! \n");
+void cd(char** path){
+    if (chdir(path) != 0 || path == NULL) {
+        printf("Error: %s (%s)\n", path, strerror(errno));
+        exit(1);
+    }
     return;
 }
 
