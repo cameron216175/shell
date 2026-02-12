@@ -111,7 +111,7 @@ void externalCommands(char** args){
         //child fork
         
         if (execvp(args[0], args) == -1){
-            printf("Error: %s (%s)\n", args, strerror(errno));
+            printf("Error: %s (%s)\n", *args, strerror(errno));
         }
     }
     else if (p > 0){
@@ -120,7 +120,10 @@ void externalCommands(char** args){
 }
 
 void getpath(char** arg) {
-    if (arg[1]) output("Error: This command does not require arguments"); return;
+    if (arg[1]) {
+        output("Error: This command does not require arguments"); 
+        return;
+    }
     output(path);
     return;
 }
