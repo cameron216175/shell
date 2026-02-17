@@ -64,17 +64,17 @@ void token(char* arg){
 
 void execute_command(char **tokens){
     
-    if (!tokens[0]) return;
+    if (!tokens[0]) return; // Check if tokens exists, if no tockens return.
 
 
-    for (int i = 0; i < sizeof(commands)/sizeof(commands[0]); i++){
-        if (strcmp(tokens[0], commands[i].name) == 0){
-            commands[i].fn(tokens);
-            return;
+    for (int i = 0; i < sizeof(commands)/sizeof(commands[0]); i++){  // Loop through all elements in the struct
+        if (strcmp(tokens[0], commands[i].name) == 0){ // Check if the first inputed token matches the current loop-struct-element
+            commands[i].fn(tokens); // if found, execute the related function pointer, passing in all tokens as arguments
+            return; // return after command execusion 
         }
     }
 
-    externalCommands(tokens);
+    externalCommands(tokens); // If command was not found in the intenral command struct, attempt to run as an external command.
 
     //printf("Error: command %s not found!\n", tokens[0]);
 }
@@ -113,6 +113,7 @@ void externalCommands(char** args){
         if (execvp(args[0], args) == -1){
             printf("Error: %s (%s)\n", *args, strerror(errno));
         }
+        exit(1);
     }
     else if (p > 0){
         wait(NULL);
