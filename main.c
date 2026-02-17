@@ -85,14 +85,14 @@ void cd(char** path){
         const char *HOME = getenv("HOME");
         if (chdir(HOME) != 0){
             printf("Error: %s (%s)\n", path[1], strerror(errno));
+            return;
         }
-        return;
-    }
-
-    if (chdir(path[1]) != 0 || path[1] == NULL) {
+    }   else if (chdir(path[1]) != 0) {
         printf("Error: %s (%s)\n", path[1], strerror(errno));
         return;
     }
+
+    strcpy(cwd,getcwd(NULL, 0));
 
     return;
 }
