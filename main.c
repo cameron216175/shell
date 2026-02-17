@@ -113,7 +113,7 @@ void externalCommands(char** args){
         if (execvp(args[0], args) == -1){
             printf("Error: %s (%s)\n", *args, strerror(errno));
         }
-        exit(1);
+        exit(0);
     }
     else if (p > 0){
         wait(NULL);
