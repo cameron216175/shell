@@ -7,6 +7,7 @@ void externalCommands(char** arg);
 void quit(char** arg);
 void getpath(char** arg);
 void setpath(char** arg);
+void alias(char** args);
 //void getpath(char** arg);
 
 struct command {
@@ -14,12 +15,18 @@ struct command {
     command_fn fn;
 };
 
+struct aliasMap {
+    char* name;
+    char* command;
+};
+
 struct command commands[] = {
     {"getpath",getpath},
     {"setpath", setpath},
     {"cd", cd},
-    {"exit", quit}
+    {"exit", quit},
+    {"alias", alias}
 };
 
 
-
+struct aliasMap aliases[10];

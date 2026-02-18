@@ -146,3 +146,32 @@ void quit(char** arg){
     exit(0);
 }
 
+void alias(char** args){
+
+    if (args[2] == NULL){
+        printf("Too few arguments provided\n");
+        return;
+    }
+
+    int aliasPosition = 0;
+
+    for (int i = 0; i < 10; i++){
+        if (aliases[i].name){
+            if(strcmp(args[1], aliases[i].name) == 0){
+                printf("Error: alias already exists");
+                return;
+            }
+        }
+    }
+
+    while (aliases[aliasPosition].name){
+        aliasPosition++;
+    }
+
+    aliases[aliasPosition].name = args[1];
+    aliases[aliasPosition].command = args[2];
+
+    // strcpy(aliases[aliasPosition].name, args[1]);
+    // strcpy(aliases[aliasPosition].command, args[2]);
+    return;
+}
