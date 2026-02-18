@@ -148,13 +148,15 @@ void quit(char** arg){
 
 void alias(char** args){
 
+    //skip if there are not enough arguments
     if (args[2] == NULL){
         printf("Too few arguments provided\n");
         return;
     }
-
+    
     int aliasPosition = 0;
 
+    //check if an alias with the same name already exists
     for (int i = 0; i < 10; i++){
         if (aliases[i].name){
             if(strcmp(args[1], aliases[i].name) == 0){
@@ -168,10 +170,9 @@ void alias(char** args){
         aliasPosition++;
     }
 
+    //populate alias tuple (alias, command)
     aliases[aliasPosition].name = args[1];
     aliases[aliasPosition].command = args[2];
 
-    // strcpy(aliases[aliasPosition].name, args[1]);
-    // strcpy(aliases[aliasPosition].command, args[2]);
     return;
 }
