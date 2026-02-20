@@ -160,7 +160,7 @@ void alias(char** args){
     for (int i = 0; i < 10; i++){
         if (aliases[i].name){
             if(strcmp(args[1], aliases[i].name) == 0){
-                printf("Error: alias already exists");
+                printf("Error: alias already exists\n");
                 return;
             }
         }
@@ -172,7 +172,22 @@ void alias(char** args){
 
     //populate alias tuple (alias, command)
     aliases[aliasPosition].name = args[1];
-    aliases[aliasPosition].command = args[2];
+
+    //combine all remaining args into a single string
+    int i = 2;
+    char newArgs[100] = {};
+ 
+    while(args[i]){
+        strcat(newArgs, args[i]);
+        strcat(newArgs, " "); 
+        i++;
+    }
+
+    //populate alias tuple (alias, command)
+    aliases[aliasPosition].command = newArgs;
+    
+
+    printf("%s\n%s\n", aliases[0].name, aliases[0].command);
 
     return;
 }
