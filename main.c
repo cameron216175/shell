@@ -13,6 +13,10 @@
 char *cwd = NULL;
 char *path = NULL;
 
+struct aliasMap aliases[10] = { 
+    {"",""}
+};
+
 int main(int argc, char const *argv[])
 {
     // Program init ---
@@ -150,29 +154,69 @@ void alias(char** args){
 
     //skip if there are not enough arguments
     if (args[2] == NULL){
-        printf("Too few arguments provided\n");
+        if (args[1] == NULL){
+            int i = 0;
+            while (aliases[i].name[0] != '\0'){
+                printf("%d. %s %s\n", (i+1), aliases[i].name, aliases[i].command); // alias with no commands prints out all currently saved aliases
+                i++;
+            }
+            return;
+        }
+        printf("Too few arguments provided for aliasing\n");
         return;
     }
     
     int aliasPosition = 0;
+    
+    if(strcmp(aliases[9].name, "") != 0){
+        printf("Max number (10) aliases reached\n");
+        return;
+    }
 
     //check if an alias with the same name already exists
     for (int i = 0; i < 10; i++){
-        if (aliases[i].name){
-            if(strcmp(args[1], aliases[i].name) == 0){
-                printf("Error: alias already exists");
-                return;
-            }
+        if(strcmp(args[1], aliases[i].name) == 0){
+            printf("Error: alias already exists\n");
+            return;
         }
     }
 
-    while (aliases[aliasPosition].name){
+    //get position
+    while (aliases[aliasPosition].name[0] != '\0'){
         aliasPosition++;
     }
 
     //populate alias tuple (alias, command)
-    aliases[aliasPosition].name = args[1];
-    aliases[aliasPosition].command = args[2];
+    strcpy(aliases[aliasPosition].name, args[1]);
+    strcpy(aliases[aliasPosition].command, args[2]);
+
+    return;
+}
+
+void unalias(char** arg){
+
+    int aliasPosition = 0;
+
+    if (aliases[0].name[0] == '\0'){
+        printf("No aliases to unalias");
+        return;
+    }
+
+    //find position
+    for (int i = 0; i < 10; i++){
+        if (strcmp(aliases[i].name, arg[1]) == 0){
+            aliasPosition = i;
+        }
+    }
+
+    //set name[0] and command[0] = '\0'
+    aliases[aliasPosition].name[0] = '\0';
+    aliases[aliasPosition].command[0] = '\0';
+
+
+    //move aliases back to lowest places in array
+    
+
 
     return;
 }

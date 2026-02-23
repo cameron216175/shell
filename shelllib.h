@@ -8,6 +8,7 @@ void quit(char** arg);
 void getpath(char** arg);
 void setpath(char** arg);
 void alias(char** args);
+void unalias(char** arg);
 //void getpath(char** arg);
 
 struct command {
@@ -16,8 +17,8 @@ struct command {
 };
 
 struct aliasMap {
-    char* name;
-    char* command;
+    char name[64];
+    char command[256];
 };
 
 struct command commands[] = {
@@ -25,8 +26,35 @@ struct command commands[] = {
     {"setpath", setpath},
     {"cd", cd},
     {"exit", quit},
-    {"alias", alias}
+    {"alias", alias},
+    {"unalias", unalias}
 };
 
 
-struct aliasMap aliases[10];
+// struct aliasMap aliases[10] = {
+//     {"",""},
+//     {"",""},
+//     {"",""},
+//     {"",""},
+//     {"",""},
+//     {"",""},
+//     {"",""},
+//     {"",""},
+//     {"",""},
+//     {"",""}
+// };
+
+
+// Use for testing full aliases
+// struct aliasMap aliases[10] = {
+//     {"bleh","blah"},
+//     {"bleh","blah"},
+//     {"bleh","blah"},
+//     {"bleh","blah"},
+//     {"bleh","blah"},
+//     {"bleh","blah"},
+//     {"bleh","blah"},
+//     {"bleh","blah"},
+//     {"bleh","blah"},
+//     {"bleh","blah"}
+// };
