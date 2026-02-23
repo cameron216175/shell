@@ -197,8 +197,13 @@ void unalias(char** arg){
 
     int aliasPosition = 0;
 
+    if (arg[1] == NULL){
+        printf("No arguments found\n");
+        return;
+    }
+
     if (aliases[0].name[0] == '\0'){
-        printf("No aliases to unalias");
+        printf("No aliases to unalias\n");
         return;
     }
 
