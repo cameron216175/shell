@@ -9,6 +9,7 @@ void getpath(char** arg);
 void setpath(char** arg);
 void alias(char** args);
 void unalias(char** arg);
+char** toCommand(char* alias);
 //void getpath(char** arg);
 
 struct command {
@@ -22,7 +23,7 @@ struct aliasMap {
 };
 
 struct command commands[] = {
-    {"getpath",getpath},
+    {"getpath", getpath},
     {"setpath", setpath},
     {"cd", cd},
     {"exit", quit},

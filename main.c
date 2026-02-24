@@ -13,8 +13,8 @@
 char *cwd = NULL;
 char *path = NULL;
 
-struct aliasMap aliases[10] = { 
-    {"",""}
+struct aliasMap aliases[10] = {
+    {"", ""}
 };
 
 int main(int argc, char const *argv[])
@@ -70,6 +70,16 @@ void execute_command(char **tokens){
     
     if (!tokens[0]) return; // Check if tokens exists, if no tockens return.
 
+    //if its an alias
+    for (int i = 0; i < 10; i++){
+        if (strcmp(aliases[i].name, tokens[0]) == 0){
+            tokens[0] = aliases[i].command;
+            execute_command(tokens);
+            return;
+        }
+    }
+
+
 
     for (int i = 0; i < sizeof(commands)/sizeof(commands[0]); i++){  // Loop through all elements in the struct
         if (strcmp(tokens[0], commands[i].name) == 0){ // Check if the first inputed token matches the current loop-struct-element
@@ -91,7 +101,7 @@ void cd(char** path){
             printf("Error: %s (%s)\n", path[1], strerror(errno));
             return;
         }
-    }   else if (chdir(path[1]) != 0) {
+    } else if (chdir(path[1]) != 0) {
         printf("Error: %s (%s)\n", path[1], strerror(errno));
         return;
     }
@@ -145,7 +155,6 @@ void setpath(char** arg) {
     return;
 }
 
-
 void quit(char** arg){
     exit(0);
 }
@@ -192,18 +201,21 @@ void alias(char** args){
 
     while(args[i]){
         strcat(newArgs, args[i]);
-        strcat(newArgs, " ");
+        if (!args[i++]){
+            strcat(newArgs, " ");
+        }
         i++;
     }
 
     //populate alias tuple (alias, command)
     strcpy(aliases[aliasPosition].name, args[1]);
-    strcpy(aliases[aliasPosition].command, newArgs);
+    strcpy(aliases[aliasPosition].command, args[2]);
 
     return;
 }
 
 void unalias(char** arg){
+
 
     int aliasPosition = 0;
 
