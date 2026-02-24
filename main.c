@@ -220,8 +220,15 @@ void unalias(char** arg){
 
 
     //move aliases back to lowest places in array
-    
-
+    for (int i = 1; i < 10; i++){
+        if (aliases[i-1].name[0] == '\0' && aliases[i].name[0] != '\0'){ //if there is a value after an empty 
+            strcpy(aliases[i-1].name, aliases[i].name); //move them back one place
+            strcpy(aliases[i-1].command, aliases[i].command);
+            aliases[i].name[0] = '\0'; 
+            aliases[i].command[0] = '\0';
+            i--; // PROBABLY NOT NECCESSARY - PERHAPS DUPLICATING WORK
+        }
+    }
 
     return;
 }
