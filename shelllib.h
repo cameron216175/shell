@@ -29,32 +29,3 @@ struct command commands[] = {
     {"alias", alias},
     {"unalias", unalias}
 };
-
-
-// struct aliasMap aliases[10] = {
-//     {"",""},
-//     {"",""},
-//     {"",""},
-//     {"",""},
-//     {"",""},
-//     {"",""},
-//     {"",""},
-//     {"",""},
-//     {"",""},
-//     {"",""}
-// };
-
-
-// Use for testing full aliases
-// struct aliasMap aliases[10] = {
-//     {"bleh","blah"},
-//     {"bleh","blah"},
-//     {"bleh","blah"},
-//     {"bleh","blah"},
-//     {"bleh","blah"},
-//     {"bleh","blah"},
-//     {"bleh","blah"},
-//     {"bleh","blah"},
-//     {"bleh","blah"},
-//     {"bleh","blah"}
-// };
