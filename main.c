@@ -186,9 +186,19 @@ void alias(char** args){
         aliasPosition++;
     }
 
+    //combine all remaining args into a single string
+    int i = 2;
+    char newArgs[100] = {};
+
+    while(args[i]){
+        strcat(newArgs, args[i]);
+        strcat(newArgs, " ");
+        i++;
+    }
+
     //populate alias tuple (alias, command)
     strcpy(aliases[aliasPosition].name, args[1]);
-    strcpy(aliases[aliasPosition].command, args[2]);
+    strcpy(aliases[aliasPosition].command, newArgs);
 
     return;
 }
