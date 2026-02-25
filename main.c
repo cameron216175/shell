@@ -12,6 +12,8 @@
 
 char *cwd = NULL;
 char *path = NULL;
+char history[84][512];
+int histpos = 0;
 
 int main(int argc, char const *argv[])
 {
@@ -27,6 +29,7 @@ int main(int argc, char const *argv[])
     cwd = strdup(HOME);
 
     char input[100];
+    // history = malloc(512);
    // -------
 
     while (!feof(stdin)){  // Main loop
@@ -34,6 +37,7 @@ int main(int argc, char const *argv[])
         fgets(input,sizeof(input),stdin);
         input[strcspn(input, "\n")] = 0;
         token(input);
+
     }
     return 0;
 }
@@ -53,14 +57,20 @@ void token(char* arg){
         token = strtok(NULL, " \t;|><&");
     }
 
-    // for (int i = 0; i < 32; i++){
-    //     printf("%s",tokens[i]);
-    // }
+    for (int i = 0; tokens[i] != NULL; i++){
+        strcpy(history[histpos * 4], tokens[i]);
+        histpos++;
+        strcpy(history[histpos * 4], " ");
+        histpos++;
+    }
+    
+    strcpy(history[histpos * 4], ", ");
+    histpos++;
+
     execute_command(tokens);
 
     return;
 }
-
 
 void execute_command(char **tokens){
     
@@ -77,6 +87,16 @@ void execute_command(char **tokens){
     externalCommands(tokens); // If command was not found in the intenral command struct, attempt to run as an external command.
 
     //printf("Error: command %s not found!\n", tokens[0]);
+}
+
+void prhist(char** arg){
+
+    for (int i = 0; i < 84; i++){
+        if (history[i][0] != '\0')
+            printf("%s", history[i]);
+    }
+    printf("\n");
+
 }
 
 void cd(char** path){
@@ -143,6 +163,7 @@ void setpath(char** arg) {
 
 
 void quit(char** arg){
+    free(history);
     exit(0);
 }
 
