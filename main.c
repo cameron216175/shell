@@ -70,11 +70,41 @@ void execute_command(char **tokens){
     
     if (!tokens[0]) return; // Check if tokens exists, if no tockens return.
 
+
     //if its an alias
     for (int i = 0; i < 10; i++){
         if (strcmp(aliases[i].name, tokens[0]) == 0){
-            tokens[0] = aliases[i].command;
-            execute_command(tokens);
+            char *aliasTokens[32] = {};
+            char aliasCommand[256];
+            strcpy(aliasCommand, aliases[i].command);
+
+            //tokenise 
+            char *aliasToken = strtok(aliasCommand, " ");
+            int j = 0;
+
+            while(aliasToken != NULL){
+                aliasTokens[j++] = aliasToken;
+                aliasToken = strtok(NULL, " ");
+            }
+            
+            //add command with params to new tokens
+            char *newTokens[32] = {};
+            int x = 0;
+            for(int k = j; k != 0; k--){
+                newTokens[x] = aliasTokens[x];
+                x++;
+            }
+
+            //add tokens to new tokens
+            int p = 1;
+            while(tokens[p] != NULL){
+                newTokens[x] = tokens[p];
+                x++;
+                p++;
+            }
+
+            execute_command(newTokens);
+            
             return;
         }
     }
@@ -161,14 +191,25 @@ void quit(char** arg){
 
 void alias(char** args){
 
+    
+
+
     //skip if there are not enough arguments
     if (args[2] == NULL){
         if (args[1] == NULL){
             int i = 0;
+
+            
             while (aliases[i].name[0] != '\0'){
                 printf("%d. %s %s\n", (i+1), aliases[i].name, aliases[i].command); // alias with no commands prints out all currently saved aliases
                 i++;
+                
             }
+            if(aliases[0].name[0] == '\0'){
+                printf("No aliases set yet\n");
+                return;
+            }
+            
             return;
         }
         printf("Too few arguments provided for aliasing\n");
@@ -176,22 +217,25 @@ void alias(char** args){
     }
     
     int aliasPosition = 0;
+    int overriding = 0; //if overriding alias 
     
-    if(strcmp(aliases[9].name, "") != 0){
+    
+    //check if we are overidding
+    for (int i = 0; i < 10; i++){
+        if(strcmp(args[1], aliases[i].name) == 0){
+            overriding = 1;
+        }
+    }
+
+    // Check if list is full and we are not overdding
+    if(overriding == 0 && strcmp(aliases[9].name, "") != 0){
         printf("Max number (10) aliases reached\n");
         return;
     }
 
-    //check if an alias with the same name already exists
-    for (int i = 0; i < 10; i++){
-        if(strcmp(args[1], aliases[i].name) == 0){
-            printf("Error: alias already exists\n");
-            return;
-        }
-    }
 
     //get position
-    while (aliases[aliasPosition].name[0] != '\0'){
+    while (aliases[aliasPosition].name[0] != '\0' && strcmp(aliases[aliasPosition].name, args[1]) != 0){
         aliasPosition++;
     }
 
@@ -201,15 +245,21 @@ void alias(char** args){
 
     while(args[i]){
         strcat(newArgs, args[i]);
-        if (!args[i++]){
-            strcat(newArgs, " ");
-        }
+        strcat(newArgs, " ");
         i++;
     }
 
+    int length = strlen(newArgs) -1;
+    newArgs[length] = '\0';
+
     //populate alias tuple (alias, command)
     strcpy(aliases[aliasPosition].name, args[1]);
-    strcpy(aliases[aliasPosition].command, args[2]);
+    strcpy(aliases[aliasPosition].command, newArgs);
+
+    //check if we are overriding
+    if(overriding == 1){
+        printf("Alias has been overridden\n");
+    }
 
     return;
 }
@@ -218,6 +268,8 @@ void unalias(char** arg){
 
 
     int aliasPosition = 0;
+    int aliasFound = 0;
+
 
     if (arg[1] == NULL){
         printf("No arguments found\n");
@@ -233,7 +285,13 @@ void unalias(char** arg){
     for (int i = 0; i < 10; i++){
         if (strcmp(aliases[i].name, arg[1]) == 0){
             aliasPosition = i;
+            aliasFound = 1;
         }
+    }
+
+    if(aliasFound == 0){
+        printf("Alias not found\n");
+        return;
     }
 
     //set name[0] and command[0] = '\0'
