@@ -60,8 +60,10 @@ void token(char* arg){
     for (int i = 0; tokens[i] != NULL; i++){
         strcpy(history[histpos * 4], tokens[i]);
         histpos++;
-        strcpy(history[histpos * 4], " ");
-        histpos++;
+        if (tokens[i + 1] != NULL){
+            strcpy(history[histpos * 4], " ");
+            histpos++;
+        }
     }
     
     strcpy(history[histpos * 4], ", ");
