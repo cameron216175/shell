@@ -12,8 +12,9 @@
 
 char *cwd = NULL;
 char *path = NULL;
-char history[84][512];
-int histpos = 0;
+// char history[84][512];
+int histpos = 1;
+char **history;
 
 int main(int argc, char const *argv[])
 {
@@ -31,6 +32,9 @@ int main(int argc, char const *argv[])
     char input[100];
     // history = malloc(512);
    // -------
+
+   
+   
 
     while (!feof(stdin)){  // Main loop
         printf("[%s] >> ", cwd);
@@ -57,17 +61,28 @@ void token(char* arg){
         token = strtok(NULL, " \t;|><&");
     }
 
-    for (int i = 0; tokens[i] != NULL; i++){
-        strcpy(history[histpos * 4], tokens[i]);
+    tokens[i++] = NULL;
+
+    if (history != NULL){
+        history[histpos] = malloc(strlen(", ") + 1);
+        strcpy(history[histpos], ", ");
         histpos++;
-        if (tokens[i + 1] != NULL){
-            strcpy(history[histpos * 4], " ");
+    }
+
+    for (int i = 0; tokens[i] != NULL; i++){
+        history = realloc(history, (sizeof(tokens[i]) + 1) * sizeof *history);
+        size_t len = strlen(tokens[i]) + 1;
+        history[histpos] = malloc(len);
+        strcpy(history[histpos], tokens[i]);
+        histpos++;
+        if (tokens[++i] != NULL){
+            history[histpos] = malloc(strlen(" "));
+            strcpy(history[histpos], " ");
+            --i;
             histpos++;
         }
     }
-    
-    strcpy(history[histpos * 4], ", ");
-    histpos++;
+
 
     execute_command(tokens);
 
@@ -93,12 +108,11 @@ void execute_command(char **tokens){
 
 void prhist(char** arg){
 
-    for (int i = 0; i < 84; i++){
-        if (history[i][0] != '\0')
-            printf("%s", history[i]);
+    for (int i = 1; i < histpos; i++){
+        printf("%s", history[i]);
     }
     printf("\n");
-
+    return;
 }
 
 void cd(char** path){
