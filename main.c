@@ -11,31 +11,55 @@
 
 
 char *cwd = NULL;
-char *path = NULL;
+char history [19][512];
+char* newpath;
 
 int main(int argc, char const *argv[])
 {
     // Program init ---
     const char *HOME = getenv("HOME");
-    path = getenv("PATH");
 
     if (chdir(HOME) != 0 || HOME == NULL) {
         printf("Error: %s (%s)\n", HOME, strerror(errno));
         exit(1);
     }
-
     cwd = strdup(HOME);
 
-    char input[100];
-   // -------
+    char input[512];
 
     while (!feof(stdin)){  // Main loop
         printf("[%s] >> ", cwd);
         fgets(input,sizeof(input),stdin);
         input[strcspn(input, "\n")] = 0;
+        addHistory(input);
         token(input);
     }
     return 0;
+}
+
+void addHistory(char input[512]) {
+    if (input[0] == '!') return;
+
+    char tempHistory[19][512];
+    
+    int i = 0;
+
+    while (i < 18 && history[i][0] != '\0') {
+        memcpy(tempHistory[i+1], history[i], 512);
+        i++;
+    }
+
+    memcpy(tempHistory[0], input, 512);
+
+    for (int j = 0; j <= i; ++j)
+        memcpy(history[j], tempHistory[j], 512);
+
+
+}
+
+void runHistory(char args) {
+    int pos = (args-'0')-1;
+    token(history[pos]);
 }
 
 
@@ -66,6 +90,13 @@ void execute_command(char **tokens){
     
     if (!tokens[0]) return; // Check if tokens exists, if no tockens return.
 
+    // if (strchr(tokens[0], '!') == '!') {runHistory(strchr(tokens[0], 1));}
+    if (tokens[0][0] == '!') {
+        runHistory(tokens[0][1]); 
+        return;
+    }
+
+    
 
     for (int i = 0; i < sizeof(commands)/sizeof(commands[0]); i++){  // Loop through all elements in the struct
         if (strcmp(tokens[0], commands[i].name) == 0){ // Check if the first inputed token matches the current loop-struct-element
@@ -125,7 +156,7 @@ void getpath(char** arg) {
         output("Error: This command does not require arguments"); 
         return;
     }
-    output(path);
+    output(getenv("PATH"));
     return;
 }
 
@@ -137,12 +168,18 @@ void setpath(char** arg) {
         output("Error: This command takes only 1 command"); 
         return;
     } 
-    strcpy(path, arg[1]);
+    size_t len = strlen("PATH=") + strlen(arg[1]) + 1;
+    free(newpath);
+    char* newpath = malloc(sizeof(len));
+    strcpy(newpath, "PATH=");             /* copy base */
+    strcat(newpath, arg[1]);
+    putenv(newpath);
     return;
 }
 
 
 void quit(char** arg){
     exit(0);
+    free(newpath);
 }
 
