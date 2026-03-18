@@ -30,6 +30,7 @@ int main(int argc, char const *argv[])
 
     cwd = strdup(HOME);
 
+    loadAliases();
     char input[100];
    // -------
 
@@ -39,6 +40,8 @@ int main(int argc, char const *argv[])
         input[strcspn(input, "\n")] = 0;
         token(input);
     }
+    //Save aliases to history
+    saveAliases();
     return 0;
 }
 
@@ -191,9 +194,6 @@ void quit(char** arg){
 
 void alias(char** args){
 
-    
-
-
     //skip if there are not enough arguments
     if (args[2] == NULL){
         if (args[1] == NULL){
@@ -306,9 +306,62 @@ void unalias(char** arg){
             strcpy(aliases[i-1].command, aliases[i].command);
             aliases[i].name[0] = '\0'; 
             aliases[i].command[0] = '\0';
-            i--; // PROBABLY NOT NECCESSARY - PERHAPS DUPLICATING WORK
         }
     }
 
     return;
+}
+
+void saveAliases(){
+
+    FILE* fptr;
+
+    fptr = fopen(".aliases", "w");
+
+    if (fptr == NULL) {
+        printf("Error when saving aliases");
+    } else {
+        int i = 0;
+        while(aliases[i].name[0] != '\0'){
+
+            fprintf(fptr, "%s %s\n", aliases[i].name,aliases[i].command);
+
+            i++;
+        }
+    }
+
+    fclose(fptr);
+}
+
+void loadAliases(){
+    FILE* fptr;
+
+    fptr = fopen(".aliases", "r");
+
+    if(fptr == NULL){
+        fptr = fopen(".aliases", "w");
+        loadAliases();
+    }
+    else{
+        char loaded_alias[512];
+        int index = 0;
+
+        while (fgets(loaded_alias, sizeof(loaded_alias), fptr)) {
+
+            loaded_alias[strcspn(loaded_alias, "\n")] = 0;
+
+            char *space = strchr(loaded_alias, ' ');
+            if (!space) continue;
+
+            *space = '\0';
+
+            strcpy(aliases[index].name, loaded_alias);
+            strcpy(aliases[index].command, space + 1);
+
+            index++;
+        }
+
+    };
+
+    fclose(fptr);
 }

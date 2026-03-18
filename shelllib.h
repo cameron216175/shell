@@ -10,7 +10,8 @@ void setpath(char** arg);
 void alias(char** args);
 void unalias(char** arg);
 char** toCommand(char* alias);
-//void getpath(char** arg);
+void saveAliases();
+void loadAliases();
 
 struct command {
     const char *name;
