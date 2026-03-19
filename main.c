@@ -67,6 +67,21 @@ void runHistory(char arg1, char arg2) {
     token(history[pos]);
 }
 
+void showHistory(char** args) {
+    int i = 0;
+    int j = 0;
+    while (history[i][0] != '\0') {
+        printf("%i: ", i+1);
+        while (history[i][j] != '\0')
+        {
+            printf("%c", history[i][j]);
+            j++;
+        }
+        j=0;
+        printf("\n");
+        i++;
+    }
+}
 
 void output(char* arg){
     printf("%s \n", arg);
