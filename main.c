@@ -57,8 +57,13 @@ void addHistory(char input[512]) {
 
 }
 
-void runHistory(char args) {
-    int pos = (args-'0')-1;
+void runHistory(char arg1, char arg2) {
+    int pos;
+    if (arg2 == '\0') {
+        pos = (arg1-'0')-1;
+    } else {
+        pos = ((arg1-'0')*10)+(arg2-'0')-1;
+    }
     token(history[pos]);
 }
 
@@ -92,7 +97,7 @@ void execute_command(char **tokens){
 
     // if (strchr(tokens[0], '!') == '!') {runHistory(strchr(tokens[0], 1));}
     if (tokens[0][0] == '!') {
-        runHistory(tokens[0][1]); 
+        runHistory(tokens[0][1], tokens[0][2]); 
         return;
     }
 
