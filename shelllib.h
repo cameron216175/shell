@@ -8,7 +8,8 @@ void quit(char** arg);
 void getpath(char** arg);
 void setpath(char** arg);
 void addHistory(char input[512]);
-void runHistory(char args);
+void runHistory(char arg1, char arg2);
+void showHistory(char** args);
 //void getpath(char** arg);
 
 struct command {
@@ -20,7 +21,8 @@ struct command commands[] = {
     {"getpath",getpath},
     {"setpath", setpath},
     {"cd", cd},
-    {"exit", quit}
+    {"exit", quit},
+    {"history", showHistory}
 };
 
 
