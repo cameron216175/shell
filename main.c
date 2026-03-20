@@ -10,12 +10,15 @@
 #include "shelllib.h"
 
 
+
+void writeHistory();
 char *cwd = NULL;
 char history [19][512];
 char* newpath;
 
 int main(int argc, char const *argv[])
 {
+    
     // Program init ---
     const char *HOME = getenv("HOME");
 
@@ -62,6 +65,37 @@ void runHistory(char args) {
     token(history[pos]);
 }
 
+void writeHistory() {
+    FILE *fptr;
+    char tempArr[20][512] = {0};
+    char line[512];
+    int count = 0;
+
+    fptr = fopen(".hist_list", "r");
+    if (fptr) {
+        while (count < 20 && fgets(line, sizeof(line), fptr)) {
+            line[strcspn(line, "\n")] = 0;
+            strcpy(tempArr[count++], line);
+        }
+        fclose(fptr);
+    }
+
+    fptr = fopen(".hist_list", "w");
+    if (!fptr) return;
+
+    int written = 0;
+    for (int i = 0; i < 20 && history[i][0] != '\0' && written < 20; i++) {
+        fprintf(fptr, "%s\n", history[i]);
+        written++;
+    }
+
+    for (int i = 0; i < count && written < 20; i++) {
+        fprintf(fptr, "%s\n", tempArr[i]);
+        written++;
+    }
+
+    fclose(fptr);
+}
 
 void output(char* arg){
     printf("%s \n", arg);
@@ -179,7 +213,8 @@ void setpath(char** arg) {
 
 
 void quit(char** arg){
+    writeHistory();
     exit(0);
     free(newpath);
-}
 
+}
