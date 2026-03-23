@@ -22,6 +22,7 @@ struct command commands[] = {
     {"setpath", setpath},
     {"cd", cd},
     {"exit", quit},
+    {"exit", quit},
     {"history", showHistory}
 };
 

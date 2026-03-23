@@ -9,12 +9,14 @@
 #include <stdlib.h>
 #include "shelllib.h"
 
+void readHistory(); // Foward declare to keep compiler happee
 
 
-void writeHistory();
+//void writeHistory();
 char *cwd = NULL;
 char history [19][512];
 char* newpath;
+FILE *fptr;
 
 int main(int argc, char const *argv[])
 {
@@ -22,6 +24,7 @@ int main(int argc, char const *argv[])
     // Program init ---
     const char *HOME = getenv("HOME");
 
+    readHistory();
     if (chdir(HOME) != 0 || HOME == NULL) {
         printf("Error: %s (%s)\n", HOME, strerror(errno));
         exit(1);
@@ -70,9 +73,22 @@ void runHistory(char arg1, char arg2) {
     token(history[pos]);
 }
 
-void writeHistory() {
-    FILE *fptr;
-    char tempArr[20][512] = {0};
+void showHistory(char** args) {
+    int i = 0;
+    int j = 0;
+    while (history[i][0] != '\0') {
+        printf("%i: ", i+1);
+        while (history[i][j] != '\0')
+        {
+            printf("%c", history[i][j]);
+            j++;
+        }
+        j=0;
+        printf("\n");
+        i++;
+    }
+}
+void readHistory(){
     char line[512];
     int count = 0;
 
@@ -80,27 +96,39 @@ void writeHistory() {
     if (fptr) {
         while (count < 20 && fgets(line, sizeof(line), fptr)) {
             line[strcspn(line, "\n")] = 0;
-            strcpy(tempArr[count++], line);
+            strcpy(history[count++], line);
         }
         fclose(fptr);
     }
+
+}
+void writeHistory() {
+
+    //setpath("HOME"); <- setpath is broken currenty
+    // Error: This command takes only 1 command 
+    
+    const char *HOME = getenv("HOME");
+    if (chdir(HOME) != 0 || HOME == NULL) {
+        printf("Error: %s (%s)\n", HOME, strerror(errno));
+        exit(1);
+    }
+    cwd = strdup(HOME);
+
+
+    char tempArr[20][512] = {0};
 
     fptr = fopen(".hist_list", "w");
     if (!fptr) return;
 
     int written = 0;
-    for (int i = 0; i < 20 && history[i][0] != '\0' && written < 20; i++) {
+    for (int i = 0; i < 20 && history[i][0] != '\0'; i++) {
         fprintf(fptr, "%s\n", history[i]);
-        written++;
-    }
-
-    for (int i = 0; i < count && written < 20; i++) {
-        fprintf(fptr, "%s\n", tempArr[i]);
         written++;
     }
 
     fclose(fptr);
 }
+
 
 void output(char* arg){
     printf("%s \n", arg);
@@ -219,7 +247,7 @@ void setpath(char** arg) {
 
 void quit(char** arg){
     writeHistory();
-    exit(0);
     free(newpath);
-
+    exit(0);
+ 
 }
