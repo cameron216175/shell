@@ -18,7 +18,6 @@ char history [19][512];
 char* newpath;
 FILE *fptr;
 
-
 int main(int argc, char const *argv[]) {
     
     // Program init ---
