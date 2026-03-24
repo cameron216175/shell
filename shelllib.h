@@ -31,3 +31,7 @@ struct command commands[] = {
     {"alias", alias},
     {"unalias", unalias}
 };
+
+struct aliasMap aliases[10] = {
+    {"", ""}
+};

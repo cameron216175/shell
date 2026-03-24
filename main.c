@@ -13,9 +13,6 @@
 char *cwd = NULL;
 char *path = NULL;
 
-struct aliasMap aliases[10] = {
-    {"", ""}
-};
 
 int main(int argc, char const *argv[])
 {
@@ -41,10 +38,9 @@ int main(int argc, char const *argv[])
         token(input);
     }
     //Save aliases to history
-    saveAliases();
+    
     return 0;
 }
-
 
 void output(char* arg){
     printf("%s \n", arg);
@@ -189,6 +185,7 @@ void setpath(char** arg) {
 }
 
 void quit(char** arg){
+    saveAliases();
     exit(0);
 }
 
