@@ -24,12 +24,13 @@ int main(int argc, char const *argv[])
     // Program init ---
     const char *HOME = getenv("HOME");
 
-    readHistory();
     if (chdir(HOME) != 0 || HOME == NULL) {
         printf("Error: %s (%s)\n", HOME, strerror(errno));
         exit(1);
     }
+
     cwd = strdup(HOME);
+    readHistory();
 
     char input[512];
 
