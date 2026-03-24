@@ -13,6 +13,7 @@
 char *cwd = NULL;
 char *path = NULL;
 
+
 int main(int argc, char const *argv[])
 {
     // Program init ---
@@ -26,6 +27,7 @@ int main(int argc, char const *argv[])
 
     cwd = strdup(HOME);
 
+    loadAliases();
     char input[100];
    // -------
 
@@ -35,9 +37,10 @@ int main(int argc, char const *argv[])
         input[strcspn(input, "\n")] = 0;
         token(input);
     }
+    //Save aliases to history
+    
     return 0;
 }
-
 
 void output(char* arg){
     printf("%s \n", arg);
@@ -67,6 +70,46 @@ void execute_command(char **tokens){
     if (!tokens[0]) return; // Check if tokens exists, if no tockens return.
 
 
+    //if its an alias
+    for (int i = 0; i < 10; i++){
+        if (strcmp(aliases[i].name, tokens[0]) == 0){
+            char *aliasTokens[32] = {};
+            char aliasCommand[256];
+            strcpy(aliasCommand, aliases[i].command);
+
+            //tokenise 
+            char *aliasToken = strtok(aliasCommand, " ");
+            int j = 0;
+
+            while(aliasToken != NULL){
+                aliasTokens[j++] = aliasToken;
+                aliasToken = strtok(NULL, " ");
+            }
+            
+            //add command with params to new tokens
+            char *newTokens[32] = {};
+            int x = 0;
+            for(int k = j; k != 0; k--){
+                newTokens[x] = aliasTokens[x];
+                x++;
+            }
+
+            //add tokens to new tokens
+            int p = 1;
+            while(tokens[p] != NULL){
+                newTokens[x] = tokens[p];
+                x++;
+                p++;
+            }
+
+            execute_command(newTokens);
+            
+            return;
+        }
+    }
+
+
+
     for (int i = 0; i < sizeof(commands)/sizeof(commands[0]); i++){  // Loop through all elements in the struct
         if (strcmp(tokens[0], commands[i].name) == 0){ // Check if the first inputed token matches the current loop-struct-element
             commands[i].fn(tokens); // if found, execute the related function pointer, passing in all tokens as arguments
@@ -87,7 +130,7 @@ void cd(char** path){
             printf("Error: %s (%s)\n", path[1], strerror(errno));
             return;
         }
-    }   else if (chdir(path[1]) != 0) {
+    } else if (chdir(path[1]) != 0) {
         printf("Error: %s (%s)\n", path[1], strerror(errno));
         return;
     }
@@ -141,8 +184,181 @@ void setpath(char** arg) {
     return;
 }
 
-
 void quit(char** arg){
+    saveAliases();
     exit(0);
 }
 
+void alias(char** args){
+
+    //skip if there are not enough arguments
+    if (args[2] == NULL){
+        if (args[1] == NULL){
+            int i = 0;
+
+            
+            while (aliases[i].name[0] != '\0'){
+                printf("%d. %s %s\n", (i+1), aliases[i].name, aliases[i].command); // alias with no commands prints out all currently saved aliases
+                i++;
+                
+            }
+            if(aliases[0].name[0] == '\0'){
+                printf("No aliases set yet\n");
+                return;
+            }
+            
+            return;
+        }
+        printf("Too few arguments provided for aliasing\n");
+        return;
+    }
+    
+    int aliasPosition = 0;
+    int overriding = 0; //if overriding alias 
+    
+    
+    //check if we are overidding
+    for (int i = 0; i < 10; i++){
+        if(strcmp(args[1], aliases[i].name) == 0){
+            overriding = 1;
+        }
+    }
+
+    // Check if list is full and we are not overdding
+    if(overriding == 0 && strcmp(aliases[9].name, "") != 0){
+        printf("Max number (10) aliases reached\n");
+        return;
+    }
+
+
+    //get position
+    while (aliases[aliasPosition].name[0] != '\0' && strcmp(aliases[aliasPosition].name, args[1]) != 0){
+        aliasPosition++;
+    }
+
+    //combine all remaining args into a single string
+    int i = 2;
+    char newArgs[100] = {};
+
+    while(args[i]){
+        strcat(newArgs, args[i]);
+        strcat(newArgs, " ");
+        i++;
+    }
+
+    int length = strlen(newArgs) -1;
+    newArgs[length] = '\0';
+
+    //populate alias tuple (alias, command)
+    strcpy(aliases[aliasPosition].name, args[1]);
+    strcpy(aliases[aliasPosition].command, newArgs);
+
+    //check if we are overriding
+    if(overriding == 1){
+        printf("Alias has been overridden\n");
+    }
+
+    return;
+}
+
+void unalias(char** arg){
+
+
+    int aliasPosition = 0;
+    int aliasFound = 0;
+
+
+    if (arg[1] == NULL){
+        printf("No arguments found\n");
+        return;
+    }
+
+    if (aliases[0].name[0] == '\0'){
+        printf("No aliases to unalias\n");
+        return;
+    }
+
+    //find position
+    for (int i = 0; i < 10; i++){
+        if (strcmp(aliases[i].name, arg[1]) == 0){
+            aliasPosition = i;
+            aliasFound = 1;
+        }
+    }
+
+    if(aliasFound == 0){
+        printf("Alias not found\n");
+        return;
+    }
+
+    //set name[0] and command[0] = '\0'
+    aliases[aliasPosition].name[0] = '\0';
+    aliases[aliasPosition].command[0] = '\0';
+
+
+    //move aliases back to lowest places in array
+    for (int i = 1; i < 10; i++){
+        if (aliases[i-1].name[0] == '\0' && aliases[i].name[0] != '\0'){ //if there is a value after an empty 
+            strcpy(aliases[i-1].name, aliases[i].name); //move them back one place
+            strcpy(aliases[i-1].command, aliases[i].command);
+            aliases[i].name[0] = '\0'; 
+            aliases[i].command[0] = '\0';
+        }
+    }
+
+    return;
+}
+
+void saveAliases(){
+
+    FILE* fptr;
+
+    fptr = fopen(".aliases", "w");
+
+    if (fptr == NULL) {
+        printf("Error when saving aliases");
+    } else {
+        int i = 0;
+        while(aliases[i].name[0] != '\0'){
+
+            fprintf(fptr, "%s %s\n", aliases[i].name,aliases[i].command);
+
+            i++;
+        }
+    }
+
+    fclose(fptr);
+}
+
+void loadAliases(){
+    FILE* fptr;
+
+    fptr = fopen(".aliases", "r");
+
+    if(fptr == NULL){
+        fptr = fopen(".aliases", "w");
+        loadAliases();
+    }
+    else{
+        char loaded_alias[512];
+        int index = 0;
+
+        while (fgets(loaded_alias, sizeof(loaded_alias), fptr)) {
+
+            loaded_alias[strcspn(loaded_alias, "\n")] = 0;
+
+            char *space = strchr(loaded_alias, ' ');
+            if (!space) continue;
+
+            *space = '\0';
+
+            strcpy(aliases[index].name, loaded_alias);
+            strcpy(aliases[index].command, space + 1);
+
+            index++;
+        }
+
+    };
+
+    fclose(fptr);
+}
