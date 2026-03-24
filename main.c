@@ -18,8 +18,7 @@ char history [19][512];
 char* newpath;
 FILE *fptr;
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]) {
     
     // Program init ---
     const char *HOME = getenv("HOME");
@@ -107,14 +106,6 @@ void writeHistory() {
 
     //setpath("HOME"); <- setpath is broken currenty
     // Error: This command takes only 1 command 
-    
-    const char *HOME = getenv("HOME");
-    if (chdir(HOME) != 0 || HOME == NULL) {
-        printf("Error: %s (%s)\n", HOME, strerror(errno));
-        exit(1);
-    }
-    cwd = strdup(HOME);
-
 
     char tempArr[20][512] = {0};
 
