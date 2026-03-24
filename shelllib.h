@@ -11,20 +11,33 @@ void addHistory(char input[512]);
 void runHistory(char arg1, char arg2);
 void showHistory(char** args);
 //void getpath(char** arg);
+void alias(char** args);
+void unalias(char** arg);
+char** toCommand(char* alias);
+void saveAliases();
+void loadAliases();
 
 struct command {
     const char *name;
     command_fn fn;
 };
 
+struct aliasMap {
+    char name[64];
+    char command[256];
+};
+
 struct command commands[] = {
-    {"getpath",getpath},
+    {"getpath", getpath},
     {"setpath", setpath},
     {"cd", cd},
     {"exit", quit},
     {"exit", quit},
     {"history", showHistory}
+    {"alias", alias},
+    {"unalias", unalias}
 };
 
-
-
+struct aliasMap aliases[10] = {
+    {"", ""}
+};
