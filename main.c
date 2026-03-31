@@ -30,6 +30,7 @@ int main(int argc, char const *argv[]) {
 
     cwd = strdup(HOME);
     readHistory();
+    loadAliases();
 
     char input[512];
 
@@ -65,9 +66,23 @@ void addHistory(char input[512]) {
 
 }
 
-void runHistory(char arg1, char arg2) {
+void lastCommand(char** args) {
+    if (args[1]){
+        output("Error: This command does not require an arguement"); 
+        return;
+    }
+    token(history[0]);
+}
+
+void runHistory(char arg1, char arg2, char arg3) {
     int pos;
-    if (arg2 == '\0') {
+    if (arg1 == '-' && arg3 != '\0') {
+        pos = ((arg2-'0')*10)+(arg3-'0')-1;
+    }
+    else if (arg1 == '-'){
+        pos = (arg2-'0')-1;
+    }
+    else if (arg2 == '\0') {
         pos = (arg1-'0')-1;
     } else {
         pos = ((arg1-'0')*10)+(arg2-'0')-1;
@@ -152,8 +167,8 @@ void execute_command(char **tokens){
     if (!tokens[0]) return; // Check if tokens exists, if no tockens return.
 
     // if (strchr(tokens[0], '!') == '!') {runHistory(strchr(tokens[0], 1));}
-    if (tokens[0][0] == '!') {
-        runHistory(tokens[0][1], tokens[0][2]); 
+    if (tokens[0][0] == '!' && tokens[0][1] != '!') {
+        runHistory(tokens[0][1], tokens[0][2], tokens[0][3]); 
         return;
     }
 
@@ -213,6 +228,11 @@ void execute_command(char **tokens){
 
 void cd(char** path){
 
+    if (path[2]){
+        output("Error: This command takes only 1 arguement"); 
+        return;
+    } 
+
     if (path[1] == NULL){
         const char *HOME = getenv("HOME");
         if (chdir(HOME) != 0){
@@ -263,10 +283,10 @@ void getpath(char** arg) {
 
 void setpath(char** arg) {
     if (!arg[1]){
-        output("Error: This command requires and arguement"); 
+        output("Error: This command requires an arguement"); 
         return;
     } else if (arg[2]){
-        output("Error: This command takes only 1 command"); 
+        output("Error: This command takes only 1 arguement"); 
         return;
     } 
     size_t len = strlen("PATH=") + strlen(arg[1]) + 1;
